@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(skooma SHARED
   exports.def
+  src/Config.cpp
+  src/Config.h
   src/dinput8hook.cpp
   src/dinput8hook.h
   src/dllmain.cpp
@@ -19,7 +21,7 @@ add_library(skooma SHARED
   src/hook.h
   src/win32.cpp
   src/win32.h)
-target_link_libraries(skooma PUBLIC shlwapi ${CONAN_LIBS})
+target_link_libraries(skooma PUBLIC shlwapi mincore ${CONAN_LIBS})
 target_include_directories(skooma PUBLIC src)
 target_compile_definitions(skooma PUBLIC
   NOMINMAX)

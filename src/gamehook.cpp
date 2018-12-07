@@ -1,5 +1,6 @@
 #include "gamehook.h"
 
+#include "Config.h"
 #include "hook.h"
 #include <chrono>
 #include <windows.h>
@@ -61,9 +62,13 @@ namespace gamehook
 {
     void install()
     {
-        hook::write_rel_jump(START_GAME_ADDR,
-                             reinterpret_cast<ULONG_PTR>(start_game_detour));
-        hook::write_rel_jump(MAIN_LOOP_ADDR,
-                             reinterpret_cast<ULONG_PTR>(main_loop_detour));
+        if (global_config.auto_tdt) {
+            hook::write_rel_jump(START_GAME_ADDR, reinterpret_cast<ULONG_PTR>(
+                                                      start_game_detour));
+        }
+        if (global_config.limit_framerate) {
+            hook::write_rel_jump(MAIN_LOOP_ADDR,
+                                 reinterpret_cast<ULONG_PTR>(main_loop_detour));
+        }
     }
 }

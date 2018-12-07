@@ -60,10 +60,23 @@ namespace win32
                 throw get_last_error_exception();
             }
         }
-        PathStripPathW(buffer);
-        CharLowerBuffW(buffer, lstrlenW(buffer));
-        std::wstring result(buffer);
+        std::wstring result(buffer, size);
         delete[] buffer;
+        return result;
+    }
+
+    std::vector<uint8_t> get_file_version_info(const std::wstring &file_name)
+    {
+        DWORD dummy;
+        DWORD size = GetFileVersionInfoSizeW(file_name.c_str(), &dummy);
+        if (size == 0) {
+            throw win32::get_last_error_exception();
+        }
+        std::vector<uint8_t> result(size);
+        if (!GetFileVersionInfoW(file_name.c_str(), NULL, size,
+                                 result.data())) {
+            throw win32::get_last_error_exception();
+        }
         return result;
     }
 

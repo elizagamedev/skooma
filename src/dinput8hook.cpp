@@ -1,6 +1,7 @@
 #include "dinput8hook.h"
 
 #define DIRECTINPUT_VERSION 0x0800
+#include "Config.h"
 #include "win32.h"
 #include <algorithm>
 #include <cstring>
@@ -128,12 +129,18 @@ public:
             if (result != DI_OK) {
                 return result;
             }
+            if (!global_config.scrollclick) {
+                return result;
+            }
             if (state->lZ == 0) {
                 // Is not scrolling
                 scroll_click_state = MouseRelease;
             } else {
-                if (keyboard_state[DIK_LSHIFT] & 0x80) {
-                    state->lZ = 0;
+                if (keyboard_state[global_config.scrollclick_modifier_key]
+                    & 0x80) {
+                    if (global_config.scrollclick_disable_scroll) {
+                        state->lZ = 0;
+                    }
                     if (scroll_click_state == MouseClick) {
                         scroll_click_state = MouseRelease;
                     } else {
