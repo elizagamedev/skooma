@@ -1,10 +1,9 @@
 #include "win32.h"
 
+#include <exception>
+#include <list>
 #include <shlwapi.h>
 #include <tlhelp32.h>
-#include <list>
-#include <exception>
-
 
 namespace win32
 {
@@ -14,16 +13,12 @@ namespace win32
         DWORD dw = GetLastError();
 
         DWORD size = FormatMessageA(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER
-            | FORMAT_MESSAGE_FROM_SYSTEM
-            | FORMAT_MESSAGE_IGNORE_INSERTS,
-            NULL,
-            dw,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPTSTR)&lpMsgBuf,
-            0, NULL);
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
+                | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR)&lpMsgBuf, 0, NULL);
 
-        std::string result(static_cast<char*>(lpMsgBuf), size);
+        std::string result(static_cast<char *>(lpMsgBuf), size);
         LocalFree(lpMsgBuf);
         return result;
     }
@@ -57,7 +52,7 @@ namespace win32
             if (error == ERROR_SUCCESS) {
                 break;
             }
-            delete [] buffer;
+            delete[] buffer;
             if (error == ERROR_INSUFFICIENT_BUFFER) {
                 size *= 2;
             } else {
@@ -68,7 +63,7 @@ namespace win32
         PathStripPathW(buffer);
         CharLowerBuffW(buffer, lstrlenW(buffer));
         std::wstring result(buffer);
-        delete [] buffer;
+        delete[] buffer;
         return result;
     }
 
@@ -103,9 +98,8 @@ namespace win32
         }
         THREADENTRY32 te;
         te.dwSize = sizeof(te);
-        DWORD min_size = \
-            FIELD_OFFSET(THREADENTRY32, th32OwnerProcessID)
-            + sizeof(te.th32OwnerProcessID);
+        DWORD min_size = FIELD_OFFSET(THREADENTRY32, th32OwnerProcessID)
+                         + sizeof(te.th32OwnerProcessID);
         if (Thread32First(h, &te)) {
             do {
                 if (te.dwSize < min_size) {
@@ -117,7 +111,8 @@ namespace win32
                 if (te.th32ThreadID == thread_id) {
                     continue;
                 }
-                HANDLE thread = OpenThread(THREAD_ALL_ACCESS, FALSE, te.th32ThreadID);
+                HANDLE thread
+                    = OpenThread(THREAD_ALL_ACCESS, FALSE, te.th32ThreadID);
                 if (thread != NULL) {
                     SuspendThread(thread);
                     CloseHandle(thread);
@@ -148,5 +143,20 @@ namespace win32
         if (eptr) {
             std::rethrow_exception(eptr);
         }
+    }
+
+    std::wstring get_system_directory()
+    {
+        UINT size = GetSystemDirectoryW(nullptr, 0);
+        if (size == 0) {
+            throw win32::get_last_error_exception();
+        }
+        WCHAR *buf = new WCHAR[size];
+        if (GetSystemDirectoryW(buf, size) != size - 1) {
+            throw win32::get_last_error_exception();
+        }
+        std::wstring result(buf, size - 1);
+        delete[] buf;
+        return result;
     }
 }

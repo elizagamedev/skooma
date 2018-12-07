@@ -2,9 +2,8 @@
 
 #include <windows.h>
 
-
-namespace prochook
+namespace dinput8hook
 {
-    void install(HINSTANCE dll_instance);
+    void install();
     void uninstall();
 }

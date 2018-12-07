@@ -1,10 +1,10 @@
 #pragma once
 
-#include <windows.h>
-#include <string>
-#include <vector>
 #include <exception>
 #include <functional>
+#include <string>
+#include <vector>
+#include <windows.h>
 
 namespace win32
 {
@@ -14,4 +14,5 @@ namespace win32
     void run_event_loop();
     std::wstring get_module_file_name(HMODULE module);
     void with_suspend_threads(std::function<void()> func);
+    std::wstring get_system_directory();
 }

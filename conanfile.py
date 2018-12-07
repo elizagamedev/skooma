@@ -12,7 +12,7 @@ class SkoomaConan(ConanFile):
     url = "https://github.com/elizagamedev/skooma"
     author = "Eliza Velasquez"
     license = "GPL-3.0+"
-    exports_sources = ["CMakeLists.txt", "exe/*", "dll/*", "skooma.ico", "skooma.rc"]
+    exports_sources = ["CMakeLists.txt", "exports.def", "src/*"]
     generators = "cmake"
     settings = {
         "os": ["Windows"],
@@ -27,5 +27,4 @@ class SkoomaConan(ConanFile):
         cmake.build()
 
     def package(self):
-        self.copy("*.exe", dst="bin", src="bin")
         self.copy("*.dll", dst="bin", src="bin")
