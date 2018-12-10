@@ -1,6 +1,5 @@
 #include "Skooma.h"
 
-#include "NotificationIcon.h"
 #include "win32.h"
 #include <chrono>
 #include <condition_variable>
@@ -37,10 +36,6 @@ Skooma::~Skooma()
 
 void Skooma::run()
 {
-    NotificationIcon icon(
-        instance_, L"SKOOMA");
-    extern WindowsHook create_injection_hook();
-    WindowsHook injection_hook(create_injection_hook());
     WindowsHook mouse_hook(WH_MOUSE_LL, mouse_hook_func, instance_, 0);
 
     // This thread will constantly send a click and unclick event pair while

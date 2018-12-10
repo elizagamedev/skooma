@@ -46,32 +46,6 @@ namespace win32
         return args;
     }
 
-    std::wstring get_module_file_name(HMODULE module)
-    {
-        WCHAR *buffer;
-        DWORD size = 16;
-        for (;;) {
-            buffer = new WCHAR[size];
-            size = GetModuleFileNameW(module, buffer, size);
-            DWORD error = GetLastError();
-            if (error == ERROR_SUCCESS) {
-                break;
-            }
-            delete [] buffer;
-            if (error == ERROR_INSUFFICIENT_BUFFER) {
-                size *= 2;
-            } else {
-                // Weird error that can't be handled
-                throw get_last_error_exception();
-            }
-        }
-        PathStripPathW(buffer);
-        CharLowerBuffW(buffer, lstrlenW(buffer));
-        std::wstring result(buffer);
-        delete [] buffer;
-        return result;
-    }
-
     void run_event_loop()
     {
         for (;;) {
